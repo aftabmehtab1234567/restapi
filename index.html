@@ -46,11 +46,8 @@
           <th>DELETE</th>
         </tr>
         <tbody id="load-table">
-          <tr> +
-            <td></td> 
-            <td></td> 
-            <td></td>
-            <td></td>
+          <tr> 
+           
             <td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>
             <td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>
             </tr>
@@ -277,23 +274,28 @@ $(document).ready(function () {
             type: 'GET',
             data: { search: searchText }, // Send the search query as a parameter
           
-            success: function (data) {
+success: function (data) {
             
             //  console.log(data);
                $('#load-table').empty(); // Clear the existing table rows
+               console.log(data);
+               if (Array.isArray(data)) {
+    var rows = data.map(function (value) {
+        return '<tr>' +
+            '<td>' + value.id + '</td>' +
+            '<td>' + value.name + '</td>' +
+            '<td>' + value.age + '</td>' +
+            '<td>' + value.city + '</td>' +
+            '<td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>' +
+            '<td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>' +
+            '</tr>';
+    });
 
-data.forEach(function (value) {
-    $('#load-table').append(
-        '<tr>' +
-        '<td>' + value.id + '</td>' +
-        '<td>' + value.name + '</td>' +
-        '<td>' + value.age + '</td>' +
-        '<td>' + value.city + '</td>' +
-        '<td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>' +
-        '<td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>' +
-        '</tr>'
-    );
-});
+    $('#load-table').append(rows.join(''));
+} else {
+    console.error("Data is not an array.");
+}
+
 
             }
         });
