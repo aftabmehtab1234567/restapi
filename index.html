@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-fluid bg-warning">
+        <div class="container px-4 ">
+            <div class="row gx-5">
+              <div class="col">
+               <div class="p-3 text-white fs-1 fw-bold  text-start">PHP Rest API Crud</div>
+              </div>
+              <div class="col">
+                <div class="p-3 text-white fs-6 fw-bold ">Search <br>
+                <input class="rounded-pill text-end" name="search" id="search" type="text">
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="container-fluid  bg-info">
+        <div class="container text-center">
+          <form id ="add-form">
+            <div class="row row-cols-4">
+              <div class="col mt-3">Name : <input type="text" name="sname" class="rounded-pill" required=""></div>
+              <div class="col  mt-3">Age :<input type="number" name="sage" class="rounded-pill"required=""></div>
+              <div class="col  mt-3">City :<input type="text" name="city" class="rounded-pill"required=""></div>
+              <div class="col  mt-3"><button type="button" class="btn btn-primary" id="save">Save</button></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="container-fluid text-center">
+      <table style="width: 100%;"  >
+        <tr>
+          <th >id</th>
+          <th >Name</th>
+          <th>Age</th>
+          <th >City</th>
+          <th>Edit</th>
+          <th>DELETE</th>
+        </tr>
+        <tbody id="load-table">
+          <td><button class="edit-btn btn-primary" id="edit-btn">Edit</button></td> 
+          <td><button class="edit-btn  data-eid=" id="close-btn">DELETE</button></td> 
+        </tbody>
+      </table>
+    </div>
+    <div id="error-message" class="message"></div>
+    <div id="sucess-message" class="message"></div>
+    <!-- Button trigger modal -->
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="edit-btn">
+          <div class="col mt-3">ID : <input type="number"  class="rounded-pill" required="" id="edit-id"></div>
+            <div class="col mt-3">Name : <input type="text"  class="rounded-pill" required="" id="edit-name"></div>
+            <div class="col  mt-3">Age :<input type="number"  class="rounded-pill"required="" id="edit-age"></div>
+            <div class="col  mt-3">City :<input type="text" class="rounded-pill"required="" id="edit-city"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="close-btn btn-primary"  data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="save-btn" >Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      function loadTable() {
+        $('#load-table').html("");
+        $.ajax({
+          url: 'http://localhost/restapi/api-fetch-all.php',
+          type: 'GET',
+          dataType: 'json', // Expect JSON response
+          success: function (data) {
+            // Check if the response is an array
+            if (Array.isArray(data)) {
+              // Clear the existing table rows
+              $('#load-table').empty();
+  
+              // Loop through the data array and populate the table
+              data.forEach(function (value) {
+                $('#load-table').append(
+                  '<tr>' +
+                    '<td>' + value.id + '</td>' +
+                    '<td>' + value.name + '</td>' +
+                    '<td>' + value.age + '</td>' +
+                    '<td>' + value.city + '</td>' +
+                    '<td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>'+
+                    '<td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td> '+
+
+                    '</tr>'
+                );
+              });
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error(error); // Log any error
+          }
+        });
+      }
+  
+      loadTable();
+      // Rest of your code...
+    
+    });
+    // show sucess 
+    function message(message, status) {
+    if (status == true) {
+        $('#sucess-message').html(message).slideDown();
+        $('#error-message').slideUp();
+        setTimeout(function () {
+            $('#sucess-message').slideUp();
+        }, 4000);
+    } else { // Removed the redundant status check here
+        $('#error-message').html(message).slideDown();
+        $('#sucess-message').slideUp();
+        setTimeout(function () {
+            $('#error-message').slideUp();
+        }, 4000);
+    }
+}
+
+    //json data
+    function jsondata(targetform){
+      var arr=$(targetform).serializeArray();
+      var obj={};
+       for(var a=0 ;a < arr.length; a++){
+        if(arr[a].value== ""){
+          return false;
+        }
+        obj[arr[a].name] = arr[a].value;
+       
+        
+       }
+      
+       var json_string = JSON.stringify(obj); 
+       return json_string;
+      }
+    //insert record
+   // Insert record
+$('#save').on('click', function(e) {
+    e.preventDefault();
+    var jsonobj = jsondata("#add-form");
+    
+    if (jsonobj == false) {
+        message("All fields are required", false);
+    } else {
+        $.ajax({
+            url: 'http://localhost/restapi/api-insert.php',
+            type: 'POST',
+            data: jsonobj, // Sending the JSON data to the server
+            dataType: 'json',
+            success: function(data) {
+               
+                message(data.message, data.status);
+                if (data.status == true) {
+                    loadTable();
+                    $('#add-form').trigger('reset');
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+});
+
+    //fetch single record
+    $(document).on("click", ".edit-btn", function () {
+    $("#exampleModal").modal('show');
+    var studentid = $(this).data('eid'); // Corrected data attribute name
+    var obj = { sid: studentid };
+    var myjson = JSON.stringify(obj);
+    $.ajax({
+        url: 'http://localhost/restapi/api-fetch-single.php', // Assuming this endpoint fetches a single student's data
+        type: 'POST',
+        data: myjson, // Sending the student ID to the server
+        dataType: 'json',
+        success: function (data) {
+            $('#edit-id').val(data[0].id);
+            $('#edit-name').val(data[0].name);
+            $('#edit-age').val(data[0].age);
+            $('#edit-city').val(data[0].city);
+        },
+        error: function (xhr, status, error) {
+            console.error(error); // Log any error
+        }
+    });
+});
+//delete data
+$(document).on("click", ".delete-btn", function () {
+   if(confirm("do you really want to delete record ?")){
+    var studentid = $(this).data('eid'); // Corrected data attribute name
+    var obj = { id: studentid };
+    var myjson = JSON.stringify(obj);
+    $.ajax({
+        url: 'http://localhost/restapi/api-delte.php', // Assuming this endpoint fetches a single student's data
+        type: 'POST',
+        data: myjson, // Sending the student ID to the server
+        dataType: 'json',
+        success: function (data) {
+        message(data.message , data.status);
+        if(data.status==true){
+          $(row).closest("reset");
+        }
+        }
+});
+   }
+});
+
+$(document).on("click", ".close-btn", function () {
+    $("#exampleModal").modal('hide');
+});
+//update record
+$('#save-btn').on('click', function(e) {
+    e.preventDefault();
+    
+    var id = $('#edit-id').val();
+    var name = $('#edit-name').val();
+    var age = $('#edit-age').val();
+    var city = $('#edit-city').val();
+    
+    var jsonobj = {
+        id: id,
+        name: name,
+        age: age,
+        city: city
+    };
+console.log(JSON.stringify(jsonobj));
+    $.ajax({
+        url: 'http://localhost/restapi/api-update.php',
+        type: 'POST',
+        data: JSON.stringify(jsonobj), // Sending the JSON data to the server
+        contentType: 'application/json', // Set the content type for the request
+        dataType: 'json',
+        success: function(data) {
+          console.log("data"+data);
+            $('#exampleModal').modal('hide'); // Hide the modal
+            message(data.message, data.status);
+            if (data.status == true) {
+                loadTable();
+                $('#edit-btn').trigger('reset');
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error(xhr.responseText);
+        }
+    });
+});
+//search
+$(document).ready(function () {
+    $('#search').on("keyup", function () {
+        var searchText = $(this).val(); // Get the search query
+
+        $.ajax({
+            url: 'http://localhost/restapi/api-search.php', // Modify the URL to your search API
+            type: 'GET',
+            data: { search: searchText }, // Send the search query as a parameter
+          
+            success: function (data) {
+            
+             
+                $('#load-table').empty(); // Clear the existing table rows
+
+                data.forEach(function (value) {
+                  
+                    if (value.status == true) {
+                    
+                        $('#load-table').append(
+                            '<tr>' +
+                            '<td>' + value.id + '</td>' +
+                            '<td>' + value.name + '</td>' +
+                            '<td>' + value.age + '</td>' +
+                            '<td>' + value.city + '</td>' +
+                            '<td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>' +
+                            '<td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>' +
+                            '</tr>'
+                        );
+                    }
+                });
+            }
+        });
+    });
+});
+
+
+
+  </script>
+</body>
+</html>
