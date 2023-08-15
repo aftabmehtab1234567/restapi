@@ -5,18 +5,28 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
+$response = array();
+
 if (isset($_GET['search'])) {
+  
+
     $searchText = $_GET['search'];
     $sql = "SELECT * FROM `test` WHERE name LIKE '%$searchText%' OR age LIKE '%$searchText%' OR city LIKE '%$searchText%'";
     $result = mysqli_query($con, $sql);
-    $data = [];
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        $data[] = $row;
+    if ($result) {
+        $data = array();
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+
+        $response['status'] = 'success';
+        $response['data'] = $data;
+    } else {
+        $response['status'] = 'error';
+        $response['message'] = 'Query error';
     }
-
-    echo json_encode($data);
-} else {
-    echo json_encode(array('message' => 'No search query provided', 'status' => 'false'));
-}
+} 
+echo json_encode($response);
 ?>

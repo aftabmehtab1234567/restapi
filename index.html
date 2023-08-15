@@ -46,8 +46,14 @@
           <th>DELETE</th>
         </tr>
         <tbody id="load-table">
-          <td><button class="edit-btn btn-primary" id="edit-btn">Edit</button></td> 
-          <td><button class="edit-btn  data-eid=" id="close-btn">DELETE</button></td> 
+          <tr> +
+            <td></td> 
+            <td></td> 
+            <td></td>
+            <td></td>
+            <td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>
+            <td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>
+            </tr>
         </tbody>
       </table>
     </div>
@@ -265,7 +271,7 @@ console.log(JSON.stringify(jsonobj));
 $(document).ready(function () {
     $('#search').on("keyup", function () {
         var searchText = $(this).val(); // Get the search query
-
+        
         $.ajax({
             url: 'http://localhost/restapi/api-search.php', // Modify the URL to your search API
             type: 'GET',
@@ -273,25 +279,22 @@ $(document).ready(function () {
           
             success: function (data) {
             
-             
-                $('#load-table').empty(); // Clear the existing table rows
+            //  console.log(data);
+               $('#load-table').empty(); // Clear the existing table rows
 
-                data.forEach(function (value) {
-                  
-                    if (value.status == true) {
-                    
-                        $('#load-table').append(
-                            '<tr>' +
-                            '<td>' + value.id + '</td>' +
-                            '<td>' + value.name + '</td>' +
-                            '<td>' + value.age + '</td>' +
-                            '<td>' + value.city + '</td>' +
-                            '<td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>' +
-                            '<td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>' +
-                            '</tr>'
-                        );
-                    }
-                });
+data.forEach(function (value) {
+    $('#load-table').append(
+        '<tr>' +
+        '<td>' + value.id + '</td>' +
+        '<td>' + value.name + '</td>' +
+        '<td>' + value.age + '</td>' +
+        '<td>' + value.city + '</td>' +
+        '<td><button class="edit-btn" data-eid="' + value.id + '">Edit</button></td>' +
+        '<td><button class="delete-btn" data-eid="' + value.id + '">DELETE</button></td>' +
+        '</tr>'
+    );
+});
+
             }
         });
     });
